@@ -9,6 +9,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { DotIndicator } from 'react-native-indicators';
 import { useEffect } from 'react';
 import Modall from '../Components/Modall';
+import { Keyboard } from 'react-native';
 
 
 
@@ -40,6 +41,7 @@ useEffect(() => {
 
   const signin = () => {
     setLoading(true); // Set loading to true when signing in
+    Keyboard.dismiss()
     
     signInWithEmailAndPassword(auth, email, password)
               .then((userCredential) => {

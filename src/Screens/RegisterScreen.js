@@ -10,6 +10,7 @@ import { useState } from "react";
 import { serverTimestamp } from "firebase/firestore";
 import Modall from "../Components/Modall";
 import { DotIndicator } from "react-native-indicators";
+import { Keyboard } from "react-native";
 
 
 
@@ -29,13 +30,13 @@ const RegisterScreen = ({navigation}) => {
 
   const signUp = () => {
     setLoading(true); // Set loading to true
+    Keyboard.dismiss()
   
     createUserWithEmailAndPassword(auth, email, password)
       .then((authUser) => {
         // Successfully signed up
         updateProfile(authUser.user, {
           displayName: name,
-          timeStamp: serverTimestamp,
         }).then(() => {
           setLoading(false); // Set loading to false on success
           // You can navigate to the home screen or perform other actions here
@@ -143,9 +144,9 @@ const RegisterScreen = ({navigation}) => {
           
 
           <HStack alignItems={"center"} pb={3}>
-          <AntDesign name="arrowdown" size={20} color={colors.ash} />
+            <AntDesign name="arrowdown" size={20} color={colors.ash} />
 
-              <Text fontSize={13} color={colors.ash}>Go back to Login page</Text>
+            <Text fontSize={13} color={colors.ash}>Go back to Login page</Text>
           </HStack>
 
           <TouchableOpacity activeOpacity={0.5}

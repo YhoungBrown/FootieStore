@@ -9,9 +9,12 @@ const Modall = ({ showModel, setShowModel, type, message }) => {
         <Modal.CloseButton _icon={{ color: colors.main}} />
         <Modal.Header _text={{ color: colors.main, fontWeight: "600" }}>{type}</Modal.Header>
         <Modal.Body>
-          <VStack my={3} space={7}>
-            <Text fontWeight="medium">{message}</Text>
-          </VStack>
+          <VStack space={7}>
+          <Text fontWeight={"medium"}>
+            {String(message)} {/**the "String" before message is to ensure that the message is inform of a string anf if it isnt, the "String converts it to a string format so it can be shown as a text without error" */}
+          </Text>
+
+         </VStack>
         </Modal.Body>
         <Modal.Footer>
           <Button
