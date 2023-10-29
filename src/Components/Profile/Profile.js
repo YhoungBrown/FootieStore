@@ -9,12 +9,12 @@ import { useNavigation } from '@react-navigation/native';
 import { DotIndicator } from 'react-native-indicators';
 import Modall from '../Modall';
 import consoleOveride from "../../../consoleOverride/consoleOverride";
-import { updateProfile } from "firebase/auth";
+import { updateProfile, updateEmail, sendEmailVerification} from "firebase/auth";
 
 const Profile = () => {
   const [newUsername, setNewUsername] = useState("");
   const [newEmail, setNewEmail] = useState("");
-  const [newPassword, setNewPassword] = useState(""); // Fix the state variable name
+  const [newPassword, setNewPassword] = useState(""); 
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showModel, setShowModel] = useState(false);
@@ -55,11 +55,42 @@ const Profile = () => {
   ];
 
 console.log(auth.currentUser)
+
+
+
   update = () => {
-    updateProfile(auth.currentUser, {
+    setLoading(true);
+    const user = auth.currentUser;
+    const inputedEmail = newEmail; 
+  
+    // Send email change verification to the current email address
+    if (user){
+      sendEmailVerification(user)
+      .then(() => {
+        updateEmail(user, inputedEmail)
+        // Email verification sent successfully
+        console.log('Email verification sent.');
+  
+        // Add the code for showing a notification for users to see here
+        setShowModel(true);
+        setType("EMAIL UPDATE")
+        setErrorMessage("A verification email has been sent to your current email address. Please check your inbox and follow the instructions to confirm the change.")
+        
+        //loading false
+        setLoading(false)
+      })
+      .catch((error) => {
+        setLoading(false)
+        console.error(error);
+        setShowModel(true);
+        setType("ERROR")
+        setErrorMessage(error.message);
+      });} else {
+        console.log('User not authenticated');
+      }
+
+    {/*updateProfile(auth.currentUser, {
       displayName: newUsername,
-      // You can also set the 'photoURL' property if needed.
-      // photoURL: "https://example.com/jane-q-user/profile.jpg"
     })
       .then(() => {
         // Profile updated successfully
@@ -69,8 +100,9 @@ console.log(auth.currentUser)
         // An error occurred while updating the profile
         console.error(error);
         alert(error.message); // You can show the error message to the user
-      });
+      });*/}
   };
+  //here up
   
 {/* const updateProfile = async () => {
     console.log("Hey beginning here")
