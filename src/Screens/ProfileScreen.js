@@ -20,6 +20,10 @@ const [loading, setLoading] = useState(false);
 const [displayName, setDisplayName] = useState(auth.currentUser?.displayName);
 
 
+
+const navigation = useNavigation();
+
+
 useEffect(() => {
   const unsubscribe = auth.onAuthStateChanged((user) => {
     if (user && user.displayName) {
@@ -32,11 +36,11 @@ useEffect(() => {
     // Unsubscribe when the component unmounts
     unsubscribe();
   };
-}, []);
+}, [navigation]);
 
 
 
-  const navigation = useNavigation()
+  
 
   const logout = () => {
     setLoading(true);

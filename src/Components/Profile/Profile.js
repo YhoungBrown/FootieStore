@@ -9,11 +9,12 @@ import { useNavigation } from '@react-navigation/native';
 import { DotIndicator } from 'react-native-indicators';
 import Modall from '../Modall';
 import consoleOveride from "../../../consoleOverride/consoleOverride";
-import { updateProfile, updateEmail, sendEmailVerification} from "firebase/auth";
+import { updateProfile, updateEmail, sendEmailVerification, updatePassword, reauthenticateWithCredential, EmailAuthProvider} from "firebase/auth";
 
 const Profile = () => {
   const [newUsername, setNewUsername] = useState("");
   const [newEmail, setNewEmail] = useState("");
+  const [currentPassword, setCurrentPassword] = useState(""); 
   const [newPassword, setNewPassword] = useState(""); 
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -39,6 +40,13 @@ const Profile = () => {
       setState: setNewEmail,
     },
     {
+      id: "CurrentPassword",
+      label: "CURRENT PASSWORD",
+      type: "password",
+      state: currentPassword,
+      setState: setCurrentPassword,
+    },
+    {
       id: "NewPassword",
       label: "NEW PASSWORD",
       type: "password",
@@ -54,69 +62,131 @@ const Profile = () => {
     },
   ];
 
-console.log(auth.currentUser)
+//console.log(auth.currentUser)
 
 
 
-  update = () => {
-    setLoading(true);
-    const user = auth.currentUser;
-    const inputedEmail = newEmail; 
-  
-    // Send email change verification to the current email address
-    if (user){
-      sendEmailVerification(user)
-      .then(() => {
-        updateEmail(user, inputedEmail)
-        // Email verification sent successfully
-        console.log('Email verification sent.');
-  
-        // Add the code for showing a notification for users to see here
-        setShowModel(true);
-        setType("EMAIL UPDATE")
-        setErrorMessage("A verification email has been sent to your current email address. Please check your inbox and follow the instructions to confirm the change.")
-        
-        //loading false
-        setLoading(false)
-      })
-      .catch((error) => {
-        setLoading(false)
-        console.error(error);
-        setShowModel(true);
-        setType("ERROR")
-        setErrorMessage(error.message);
-      });} else {
-        console.log('User not authenticated');
-      }
+update = async () => {
+  setLoading(true);
+  const promises = [];
+  const user = auth.currentUser;
 
-    {/*updateProfile(auth.currentUser, {
-      displayName: newUsername,
-    })
-      .then(() => {
-        // Profile updated successfully
-        console.log("Update complete");
-      })
-      .catch((error) => {
-        // An error occurred while updating the profile
-        console.error(error);
-        alert(error.message); // You can show the error message to the user
-      });*/}
-  };
-  //here up
-  
-{/* const updateProfile = async () => {
-    console.log("Hey beginning here")
-    setLoading(true);
-    const user = auth.currentUser
-    //console.log(user)
-    updateProfile(user, { displayName: newUsername });
-    {/*const user = auth.currentUser
-    if (newUsername) {
-      updateProfile(user, { displayName: newUsername });
-    }*
-    console.log("Hey i got here successfully")
+  {/*if (!user) {
     setLoading(false);
-  };*/}
+    setShowModel(true);
+    setType('ERROR');
+    setErrorMessage('User not authenticated');
+    return;
+  }*/}
+
+  if (newPassword !== confirmPassword) {
+    setLoading(false);
+    setShowModel(true);
+    setType('ERROR');
+    setErrorMessage('Password and Confirm Password do not match');
+    return;
+  }
+
+  if (newPassword) {
+    if (!currentPassword) {
+      setLoading(false);
+      setShowModel(true);
+      setType('ERROR');
+      setErrorMessage("Current password is required but you haven't provided your current password");
+      return;
+    } else {
+      const newlySetPassword = newPassword;
+      const credential = EmailAuthProvider.credential(user.email, currentPassword);
+      promises.push(
+        reauthenticateWithCredential(user, credential)
+          .then(() => {
+            return updatePassword(user, newlySetPassword);
+          })
+          .catch((error) => {
+            if (error.code === 'auth/invalid-login-credentials') {
+              setShowModel(true);
+              setType('ERROR');
+              setErrorMessage("Incorrect 'Current Password' entered");
+              console.log('Incorrect password entered');
+            } else if (error.code === 'auth/user-token-expired') {
+              console.log('User token expired - continuing with other promises');
+              // Handle the user-token-expired error but continue with other promises
+              return true; // Indicate that this part of the promise succeeded
+            } else {
+              // Handle other errors and prevent Promise.all from rendering
+              return Promise.reject(error); // Indicate that this part of the promise failed
+            }
+          })
+      );
+    }
+  }
+
+  if (newUsername) {
+    promises.push(
+      updateProfile(auth.currentUser, {
+        displayName: newUsername,
+      })
+    );
+  }
+
+  if (newEmail) {
+    const inputedEmail = newEmail;
+    if (user) {
+      promises.push(
+        sendEmailVerification(user)
+          .then(() => {
+            console.log('Email verification sent.');
+            setShowModel(true);
+            setType('EMAIL UPDATE');
+            setErrorMessage('A verification email has been sent to your current email address. Please check your inbox and follow the instructions to verify your email address.');
+            return true;
+          })
+          .then(() => {
+            return updateEmail(user, inputedEmail);
+          })
+          .catch((error) => {
+            if (error.code === 'auth/user-token-expired') {
+              console.log('User token expired - continuing with other promises');
+              // Handle the user-token-expired error but continue with other promises
+              return true; // Indicate that this part of the promise succeeded
+            } else {
+              // Handle other errors and prevent Promise.all from rendering
+              return Promise.reject(error); // Indicate that this part of the promise failed
+            }
+          })
+      );
+    }
+  }
+
+  if (!newUsername && !newEmail && !newPassword) {
+    setLoading(false);
+    setShowModel(true);
+    setType('ERROR');
+    setErrorMessage("All fields are empty, and as such, the profile can't be updated with empty fields");
+  } else {
+    try {
+      await Promise.all(promises);
+      setShowModel(true);
+      setErrorMessage("Profile Update Successful!...before you can make any more change, you need to logOut and Re-login");
+      setType('SUCCESSFUL');
+      setLoading(false);
+      navigation.navigate('Bottom');
+      setNewUsername("");
+      setNewEmail("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setCurrentPassword("");
+    } catch (error) {
+      // Handle other errors here and display appropriate error message
+      setShowModel(true);
+      setType('ERROR');
+      setErrorMessage(error.message);
+    }
+  }
+};
+
+
+
   
   
   
@@ -151,6 +221,7 @@ console.log(auth.currentUser)
                   bg={colors.deepGray}
                   type={i.type}
                   py={4}
+                  value={i.state}
                   //onChangeText={(text) => i.setState(text)}
                   onChangeText={(text) => {
                         i.setState(text);
