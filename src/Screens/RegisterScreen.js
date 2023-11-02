@@ -7,7 +7,6 @@ import { TouchableOpacity } from "react-native";
 import { auth, db } from "../../firebaseConfig";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useState } from "react";
-import { serverTimestamp } from "firebase/firestore";
 import Modall from "../Components/Modall";
 import { DotIndicator } from "react-native-indicators";
 import { Keyboard } from "react-native";

@@ -8,6 +8,7 @@ import OrderScreen from "./src/Screens/OrderScreen";
 import BottomNav from './src/Navigations/BottomNav';
 import { store } from './store';
 import { Provider } from 'react-redux';
+import NotVerifyScreen from './src/Screens/NotVerifyScreen';
 
 
 
@@ -19,9 +20,10 @@ export default function App() {
     <NativeBaseProvider>
         <NavigationContainer>
             <StatusBar />
-            <StackNavigator.Navigator initialRouteName='Login' screenOptions={{
+            <StackNavigator.Navigator initialRouteName='NotVerify' screenOptions={{
               headerShown: false
             }}>
+              <StackNavigator.Screen name='NotVerify' component={NotVerifyScreen} />
               <StackNavigator.Screen name='Login' component={LoginScreen} />
               <StackNavigator.Screen name='Register' component={RegisterScreen} />
               <StackNavigator.Screen name='Order' component={OrderScreen} />
