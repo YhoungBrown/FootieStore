@@ -5,8 +5,12 @@ import OrderInfo from "../Components/OrderInfo";
 import { FontAwesome5, Ionicons} from "@expo/vector-icons";
 import OrderItem from "../Components/OrderItem";
 import OrderModel from "../Components/OrderModel";
+import { useSelector } from "react-redux";
+import { selectDeliveryAddress } from "../../features/deliverySlice";
 
 const OrderScreen = () => {
+
+  const deliveryAddress = useSelector(selectDeliveryAddress);
   return (
     <Box bg={colors.deepGray} flex={1} safeArea pt={6}>
       <Box>
@@ -23,9 +27,9 @@ const OrderScreen = () => {
           />
           <OrderInfo
           title={"DELIVER TO"} 
-          subTitle={"Address"} 
+          subTitle={"Address :"} 
           danger
-          text={"Arusha Tz, Ngaramton Crater, P.O BOX 1234"}
+          text={`${deliveryAddress.address}, ${deliveryAddress.postalCode}, ${deliveryAddress.city}, ${deliveryAddress.country}`}
             icon={<Ionicons name="location-sharp" size={30} color={colors.white}/>}
           />
         </ScrollView>

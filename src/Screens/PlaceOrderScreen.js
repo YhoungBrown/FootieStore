@@ -6,10 +6,15 @@ import {FontAwesome, FontAwesome5, Ionicons} from "@expo/vector-icons";
 import OrderItem from "../Components/OrderItem";
 import PlaceOrderModel from "../Components/PlaceOrderModel";
 import { auth } from "../../firebaseConfig";
+import { useSelector } from "react-redux";
+import { selectDeliveryAddress } from "../../features/deliverySlice";
 
 const PlaceOrderScreen = () => {
   const user = auth.currentUser.displayName;
   const userEmail = auth.currentUser.email;
+
+  const deliveryAddress = useSelector(selectDeliveryAddress);
+  //console.log(deliveryAddress)
   
   return (
     <Box bg={colors.deepGray} flex={1} safeArea pt={6}>
@@ -30,10 +35,10 @@ const PlaceOrderScreen = () => {
             icon={<FontAwesome5 name="shipping-fast" size={30} color={colors.white}/>}
           />
           <OrderInfo
-          title={"DELIVER TO"} 
-          subTitle={"Address"} 
-          text={"Arusha Tz, Ngaramton Crater, P.O BOX 1234"}
-            icon={<Ionicons name="location-sharp" size={30} color={colors.white}/>}
+          title={"DELIVER TO"}
+          subTitle={"Address :"}
+          text={`${deliveryAddress.address}, ${deliveryAddress.postalCode}, ${deliveryAddress.city}, ${deliveryAddress.country}`}
+          icon={<Ionicons name="location-sharp" size={30} color={colors.white} />}
           />
         </ScrollView>
       </Box>

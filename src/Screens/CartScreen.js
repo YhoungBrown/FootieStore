@@ -85,7 +85,7 @@ const CartScreen = () => {
               onPress={() => navigation.navigate('Shipping')}
               bg={colors.black}
               color={colors.white}
-              mt={10}>
+              my={10} >
               CHECKOUT
             </Buttone>
           </Center>
