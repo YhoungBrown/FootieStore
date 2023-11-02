@@ -29,6 +29,7 @@ const SingleProductScreen = ({route}) => {
         name: product.name,
         image: product.image,
         price: product.price , // Initial price
+        initialPrice: product.price,
         countInStock: product.countInStock,
         description: product.description,
         rating: product.rating,

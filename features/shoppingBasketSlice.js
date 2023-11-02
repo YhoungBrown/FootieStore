@@ -13,23 +13,30 @@ export const shoppingBasketSlice = createSlice({
     
       if (index !== -1) { // Check if index is not -1 (i.e., item with the same ID exists)
         state.footwears[index].quantity += action.payload.quantity; // Add the new quantity
-        state.footwears[index].price = state.footwears[index].price * state.footwears[index].quantity; // Recalculate the price based on the new quantity
+        state.footwears[index].price = state.footwears[index].initialPrice * state.footwears[index].quantity; // Recalculate the price based on the new quantity
       } else {
+        action.payload.price = action.payload.initialPrice * action.payload.quantity; // Calculate the price for the new item
         state.footwears = [...state.footwears, action.payload];
-      }      
-    },    
+      }
+    },        
     removeFootwear: (state, action) => {
       const index = state.footwears.findIndex((footwear) => footwear.id === action.payload.id);
-
-      let newShoppingBasket = [...state.footwears]
-
-      if (index >= 0){
-        newShoppingBasket.splice(index, 1);
-      } else{
-        console.warn(`can't remove product ${action.payload.id} as it's not in basket`)};
-
-        state.footwears = newShoppingBasket
-    },
+    
+      if (index >= 0) {
+        let newShoppingBasket = [...state.footwears];
+    
+        if (newShoppingBasket[index].quantity > 1) {
+          newShoppingBasket[index].quantity -= 1;
+          newShoppingBasket[index].price = newShoppingBasket[index].initialPrice * newShoppingBasket[index].quantity;
+        } else {
+          newShoppingBasket.splice(index, 1);
+        }
+    
+        state.footwears = newShoppingBasket;
+      } else {
+        console.warn(`Can't remove product ${action.payload.id} as it's not in the basket`);
+      }
+    },    
   },
 })
 

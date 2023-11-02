@@ -1,11 +1,12 @@
 import React from 'react'
-import { Box, Center, HStack, Pressable, Image, VStack, Text, Button} from 'native-base'
+import { Box, Center, HStack, Pressable, Image, VStack, Text, Button, View} from 'native-base'
 import { SwipeListView } from 'react-native-swipe-list-view'
 import colors from '../color'
  import {FontAwesome} from "@expo/vector-icons"
  import products from "../data/Products"
  import { useDispatch, useSelector } from 'react-redux';
 import { removeFootwear, selectShoppingBasket } from '../../features/shoppingBasketSlice';
+import { TouchableOpacity } from 'react-native'
 
 
 
@@ -82,12 +83,13 @@ const CartItems = () => {
 
     //Hidden Items
 const renderHiddenItems = (data) => (
-    <Pressable 
+<TouchableOpacity onPress={() => removeFromShoppingBasket(data.item.id)} activeOpacity={0.5}>
+    <View 
     w={50} 
     mt={2}
     roundedTopRight={10} 
     roundedBottomRight={10}
-    onPress={() => removeFromShoppingBasket(data.item.id)} 
+    //onPress={() => removeFromShoppingBasket(data.item.id)} 
     h={"88%"} 
     ml={"auto"} 
     justifyContent={"center"} 
@@ -99,7 +101,8 @@ const renderHiddenItems = (data) => (
             color={colors.white}
             />
         </Center>
-    </Pressable>
+    </View>
+</TouchableOpacity>
 )
 
 
