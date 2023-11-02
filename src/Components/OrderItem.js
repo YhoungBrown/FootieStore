@@ -2,13 +2,18 @@ import { View, Text, FlatList, Pressable, Box, HStack, Center, Image, VStack, Bu
 import React from 'react';
 import products from "../data/Products"
 import colors from '../color';
+import { useSelector } from 'react-redux';
+import { selectShoppingBasket } from '../../features/shoppingBasketSlice';
 
 const OrderItem = () => {
+    const shoppingBasket = useSelector(selectShoppingBasket);
+
+
   return (
     <FlatList  
   showsVerticalScrollIndicator={false} 
-  data={products.slice(0, 3)}
-  keyExtractor={(item) => item._id}
+  data={shoppingBasket}
+  keyExtractor={(item) => item.id}
   renderItem={({item}) => (
         <Pressable>
             <Box mb={3}>
@@ -45,7 +50,7 @@ const OrderItem = () => {
                         <Button 
                         bg={colors.main}
                          _pressed={{bg:colors.main}}
-                         _text={{color: colors.white}}>5</Button>
+                         _text={{color: colors.white}}>{item.quantity}</Button>
                     </Center>
                 </HStack>
             </Box>

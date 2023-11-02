@@ -6,11 +6,52 @@ import NumericInput from "react-native-numeric-input"
 import Buttone from "../Components/Buttone"
 import Review from "../Components/Review"
 import { useNavigation } from "@react-navigation/native"
+import { useDispatch } from "react-redux"
+import { addFootwear } from "../../features/shoppingBasketSlice"
+import Modall from "../Components/Modall"
 
 const SingleProductScreen = ({route}) => {
   const [value, setValue] = useState(0);
-  const navigation = useNavigation()
+  const [showModel, setShowModel] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const navigation = useNavigation();
   const product = route.params
+  const dispatch = useDispatch();
+
+  //console.log(product)
+
+
+  const addToShoppingBasket = () => {
+    if (value > 0) {
+      // Create an object with the product details
+      const productToAdd = {
+        id: product._id,
+        name: product.name,
+        image: product.image,
+        price: product.price , // Initial price
+        countInStock: product.countInStock,
+        description: product.description,
+        rating: product.rating,
+        numReviews: product.numReviews,
+        quantity: value, // Add the selected quantity
+      };
+  
+      // Dispatch the addFootwear action with the product data
+      dispatch(addFootwear(productToAdd));
+  
+      // Reset the quantity to 0 after adding to the basket
+      navigation.navigate("Cart");
+      setValue(0);
+    } else {
+      setShowModel(true);
+      setErrorMessage("You haven't selected the number of this product you would like to purchase");
+    }
+  };
+
+  
+
+  
+
   return (
     <Box safeArea flex={1} bg={colors.white}>
       <ScrollView px={5} showsVerticalScrollIndicator={false}>
@@ -27,7 +68,8 @@ const SingleProductScreen = ({route}) => {
           product.countInStock > 0 ? (
            <>
            <NumericInput 
-            value={value} 
+            value={value}
+            onChange={value => setValue(value)} 
             totalWidth={140} 
             totalHeight={40}
               iconSize={25}
@@ -56,12 +98,17 @@ const SingleProductScreen = ({route}) => {
         <Text lineHeight={24} fontSize={12}>
         {product.description}
         </Text>
-        <Buttone onPress={() => navigation.navigate("Cart")} bg={colors.main} color={colors.white} mt={10}>
+        <Buttone onPress={addToShoppingBasket} bg={colors.main} color={colors.white} mt={10}>
         ADD TO CART
         </Buttone>
         {/**Reviews */}
         <Review />
       </ScrollView>
+
+
+      {showModel && (
+            <Modall showModel={showModel} setShowModel={setShowModel} type="NOTIFICATION" message={errorMessage} />
+          )}
     </Box>
   )
 }

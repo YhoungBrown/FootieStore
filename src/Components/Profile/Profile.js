@@ -149,6 +149,11 @@ update = async () => {
               console.log('User token expired - continuing with other promises');
               // Handle the user-token-expired error but continue with other promises
               return true; // Indicate that this part of the promise succeeded
+            } else if (error.code === 'auth/operation-not-allowed') {
+              setShowModel(true);
+              setType('ERROR');
+              setErrorMessage(error.message);
+              return true;
             } else {
               // Handle other errors and prevent Promise.all from rendering
               return Promise.reject(error); // Indicate that this part of the promise failed
@@ -167,7 +172,7 @@ update = async () => {
     try {
       await Promise.all(promises);
       setShowModel(true);
-      setErrorMessage("Profile Update Successful!...before you can make any more change, you need to logOut and Re-login");
+      setErrorMessage("Profile Update Successful!...after every significant update, pls alway remember to Re-authenticate (logOut and Re-login)");
       setType('SUCCESSFUL');
       setLoading(false);
       navigation.navigate('Bottom');

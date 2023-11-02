@@ -3,9 +3,12 @@ import React from 'react'
 import colors from '../color'
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
+import { selectShoppingBasket } from '../../features/shoppingBasketSlice';
 
 const HomeSearch = () => {
-  const navigation = useNavigation()
+  const navigation = useNavigation();
+  const shoppingBasket = useSelector(selectShoppingBasket);
   return (
     <HStack 
     space={3}
@@ -39,7 +42,7 @@ const HomeSearch = () => {
               color: colors.white,
               fontsize: "11px"
             }} >
-              5
+              {shoppingBasket.length === 0 ? "0" : shoppingBasket.length}
             </Box>
         </Pressable>
     </HStack>

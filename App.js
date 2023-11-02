@@ -6,6 +6,8 @@ import LoginScreen from "./src/Screens/LoginScreen";
 import RegisterScreen from "./src/Screens/RegisterScreen";
 import OrderScreen from "./src/Screens/OrderScreen";
 import BottomNav from './src/Navigations/BottomNav';
+import { store } from './store';
+import { Provider } from 'react-redux';
 
 
 
@@ -13,6 +15,7 @@ const StackNavigator = createNativeStackNavigator();
 
 export default function App() {
   return (
+    <Provider store={store}>
     <NativeBaseProvider>
         <NavigationContainer>
             <StatusBar />
@@ -26,6 +29,7 @@ export default function App() {
             </StackNavigator.Navigator>
         </NavigationContainer>
     </NativeBaseProvider>
+    </Provider>
   );
 }
 

@@ -3,39 +3,50 @@ import React from 'react'
 import { useState } from 'react'
 import Buttone from './Buttone'
 import colors from '../color'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native';
 
-const OrdersInfos = [
-    {
-        id: 1,
-        title: "Products",
-        price: 125.77,
-        color: "black"
-    },
-    {
-        id: 2,
-        title: "Shipping",
-        price: 34.00,
-        color: "black"
-    },
-    {
-        id: 3,
-        title: "Tax",
-        price: 23.34,
-        color: "black"
-    },
-    {
-        id: 4,
-        title: "Total Amount",
-        price: 3458.00,
-        color: "main"
-    },
-]
+import { selectShoppingBasketTotal } from '../../features/shoppingBasketSlice';
+import { useSelector } from 'react-redux'
+
+
+
 
 const PlaceOrderModel = () => {
     const navigation = useNavigation()
+    const shoppingBasketTotal = useSelector(selectShoppingBasketTotal);
 
-    const [showModel, setShowModel] = useState(false)
+    const [showModel, setShowModel] = useState(false);
+
+
+
+    const OrdersInfos = [
+        {
+            id: 1,
+            title: "Products",
+            price: shoppingBasketTotal,
+            color: "black"
+        },
+        {
+            id: 2,
+            title: "Shipping",
+            price: 34.00,
+            color: "black"
+        },
+        {
+            id: 3,
+            title: "Tax",
+            price: 23.34,
+            color: "black"
+        },
+        {
+            id: 4,
+            title: "Total Amount",
+            price: shoppingBasketTotal + 34.00 + 23.34,
+            color: "main"
+        },
+    ]
+
+
   return (
     <Center>
       <Buttone onPress={() => setShowModel(true)} bg={colors.black} color={colors.white} mt={5}>

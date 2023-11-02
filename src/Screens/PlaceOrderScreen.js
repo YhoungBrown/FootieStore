@@ -5,8 +5,12 @@ import OrderInfo from "../Components/OrderInfo";
 import {FontAwesome, FontAwesome5, Ionicons} from "@expo/vector-icons";
 import OrderItem from "../Components/OrderItem";
 import PlaceOrderModel from "../Components/PlaceOrderModel";
+import { auth } from "../../firebaseConfig";
 
 const PlaceOrderScreen = () => {
+  const user = auth.currentUser.displayName;
+  const userEmail = auth.currentUser.email;
+  
   return (
     <Box bg={colors.deepGray} flex={1} safeArea pt={6}>
       <Box>
@@ -15,8 +19,8 @@ const PlaceOrderScreen = () => {
         showsHorizontalScrollIndicator={false}>
           <OrderInfo
           title={"CUSTOMER"} 
-          subTitle={"Admin Doe"} 
-          text={"admin@example.com"}
+          subTitle={user} 
+          text={userEmail}
             icon={<FontAwesome name="user" size={30} color={colors.white}/>}
           />
           <OrderInfo
