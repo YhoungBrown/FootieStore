@@ -85,7 +85,7 @@ const PlaceOrderModel = () => {
                     setShowModel(false)
                 }}
                 _pressed={{
-                    bg: colors.main
+                    bg: colors.ash
                 }}>
                     PLACE AN ORDER
                 </Button>

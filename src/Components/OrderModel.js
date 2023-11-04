@@ -91,7 +91,7 @@ const OrderModel = () => {
                     navigation.navigate("Home")
                     setShowModel(false)}}
                 _pressed={{
-                    bg: colors.black
+                    bg: colors.ash
                 }}>
                     PAY LATER
                 </Button>
