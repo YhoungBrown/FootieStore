@@ -10,6 +10,8 @@ import { DotIndicator } from 'react-native-indicators';
 import { useEffect } from 'react';
 import Modall from '../Components/Modall';
 import { Keyboard } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { clearUser, setUser } from '../../features/userSlice';
 
 
 
@@ -23,14 +25,22 @@ const [errorMessage, setErrorMessage] = useState("")
 
 
 
-
+const dispatch = useDispatch();
 
 useEffect(() => {
   // Check if a user is already logged in
   const unsubscribe = auth.onAuthStateChanged((authUser) => {
       if (authUser) {
+          dispatch(setUser({
+            uid : authUser.uid, 
+            displayName : authUser.displayName, 
+            email : authUser.email, 
+            photoURL : authUser.photoURL})
+            );
           // If a user is already logged in, navigate to the home screen
           navigation.replace("Bottom");
+      } else {
+        dispatch(clearUser());
       }
   });
 

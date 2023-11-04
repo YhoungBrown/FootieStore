@@ -1,5 +1,5 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useLayoutEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Text,
   Box,
@@ -15,18 +15,38 @@ import { useNavigation } from '@react-navigation/native';
 import {
   selectShoppingBasket,
   selectShoppingBasketTotal,
+  setFootwear,
 } from '../../features/shoppingBasketSlice';
 import colors from '../color';
 import CartEmpty from "../Components/CartEmpty";
 import CartItems from '../Components/CartItems';
+import { useEffect } from 'react';
+import { collection, doc, getDoc, onSnapshot, setDoc } from 'firebase/firestore';
+import { db } from '../../firebaseConfig';
+import { selectUser } from '../../features/userSlice';
 
 const CartScreen = () => {
   //const shoppingBasket = useSelector((state) => state.shoppingBasket.footwears);
   const shoppingBasket = useSelector(selectShoppingBasket);
   const shoppingBasketTotal = useSelector(selectShoppingBasketTotal);
   const navigation = useNavigation();
+  const user = useSelector(selectUser);
+ // const dispatch = useDispatch();
+  
+
+
+
+  useLayoutEffect(() => {
+    const collectionRef = collection(db, 'shoppingBasket');
+        const docRef = doc(collectionRef, user.uid);
+       setDoc(docRef, { items: shoppingBasket });
+        console.log(shoppingBasket);
+        console.log('Document set/updated successfully');
+  }, [shoppingBasket, navigation])
+  
 
   
+  console.log(shoppingBasketTotal)
   console.log(shoppingBasket)
   return (
     <Box flex={1} safeAreaTop bg={colors.subGreen}>

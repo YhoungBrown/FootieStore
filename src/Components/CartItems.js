@@ -1,26 +1,75 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Box, Center, HStack, Pressable, Image, VStack, Text, Button, View} from 'native-base'
 import { SwipeListView } from 'react-native-swipe-list-view'
 import colors from '../color'
  import {FontAwesome} from "@expo/vector-icons"
  import products from "../data/Products"
  import { useDispatch, useSelector } from 'react-redux';
-import { removeFootwear, selectShoppingBasket } from '../../features/shoppingBasketSlice';
+import { removeFootwear, selectShoppingBasket, setFootwear } from '../../features/shoppingBasketSlice';
 import { TouchableOpacity } from 'react-native'
-
+import { collection, doc, onSnapshot, setDoc } from 'firebase/firestore'
+import { db } from '../../firebaseConfig'
+import { selectUser } from '../../features/userSlice'
+import { useLayoutEffect } from 'react'
+import { useNavigation } from '@react-navigation/native'
 
 
 
 
 const CartItems = () => {
     const dispatch = useDispatch();
+    const user = useSelector(selectUser)
    // const shoppingBasket = useSelector((state) => state.shoppingBasket.footwears);
    const shoppingBasket = useSelector(selectShoppingBasket);
+   const navigation = useNavigation();
+   const [fetchedData, setFetchedData] = useState([]);
 
-    const removeFromShoppingBasket = (id) => {
-        console.log('CheckOut:', shoppingBasket);
-        dispatch(removeFootwear({ id }));
+
+
+   // Firestore document reference
+  
+  
+  const cartDocRef = doc(db, 'shoppingBasket', user.uid);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(cartDocRef, (doc) => {
+      if (doc.exists()) {
+        const cartData = doc.data();
+        setFetchedData(cartData.items);
+        // Optionally, you can also update the Redux store with the fetched data
+        dispatch(setFootwear(cartData.items));
+        //console.log("fetched Data :", fetchedData);
+      }
+    });
+
+    return () => {
+      unsubscribe();
     };
+  }, [])
+
+
+   const removeFromShoppingBasket = (id) => {
+    console.log('CheckOut:', shoppingBasket);
+    dispatch(removeFootwear({ id }));
+  
+    // Use the latest shoppingBasket from Redux
+    {/*const updatedShoppingBasket = useSelector(selectShoppingBasket);
+  
+    // Update the shoppingBasket in Firestore
+      const collectionRef = collection(db, 'shoppingBasket');
+      const docRef = doc(collectionRef, user.uid);
+
+      // The code to set/update the document should use `docRef`
+      setDoc(docRef, { items: updatedShoppingBasket })
+      .then(() => {
+        console.log('Document set/updated successfully');
+      })
+      .catch((error) => {
+       console.error('Error setting/updating document: ', error);
+      });*/}
+  };
+  
+  
 
 
     const Swiper = () => (
@@ -29,7 +78,7 @@ const CartItems = () => {
         previewRowKey={"0"}
         previewOpenValue={-40}
         previewOpenDelay={3000}
-        data={shoppingBasket}
+        data={fetchedData}
         renderHiddenItem={renderHiddenItems}
         renderItem={renderItems}
         showsVerticalScrollIndicator={false}/>

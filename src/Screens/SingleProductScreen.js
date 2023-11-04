@@ -1,34 +1,38 @@
 import {View, Text, Box, ScrollView, Image, Heading, HStack, Spacer} from "native-base"
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import colors from "../color"
 import Rating from "../Components/Ratings"
 import NumericInput from "react-native-numeric-input"
 import Buttone from "../Components/Buttone"
 import Review from "../Components/Review"
 import { useNavigation } from "@react-navigation/native"
-import { useDispatch } from "react-redux"
+import { useDispatch} from "react-redux"
 import { addFootwear } from "../../features/shoppingBasketSlice"
 import Modall from "../Components/Modall"
+import { DotIndicator } from "react-native-indicators"
+
 
 const SingleProductScreen = ({route}) => {
   const [value, setValue] = useState(0);
   const [showModel, setShowModel] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  
+
   const navigation = useNavigation();
   const product = route.params
   const dispatch = useDispatch();
 
-  //console.log(product)
-
 
   const addToShoppingBasket = () => {
+    setLoading(true);
     if (value > 0) {
       // Create an object with the product details
       const productToAdd = {
         id: product._id,
         name: product.name,
         image: product.image,
-        price: product.price , // Initial price
+        price: product.price, // Initial price
         initialPrice: product.price,
         countInStock: product.countInStock,
         description: product.description,
@@ -39,15 +43,17 @@ const SingleProductScreen = ({route}) => {
   
       // Dispatch the addFootwear action with the product data
       dispatch(addFootwear(productToAdd));
-  
-      // Reset the quantity to 0 after adding to the basket
-      navigation.navigate("Cart");
-      setValue(0);
+     
+        navigation.navigate('Cart');
+        setValue(0);
+        setLoading(false);
     } else {
+      setLoading(false);
       setShowModel(true);
       setErrorMessage("You haven't selected the number of this product you would like to purchase");
     }
   };
+  
 
   
 
@@ -105,6 +111,15 @@ const SingleProductScreen = ({route}) => {
         {/**Reviews */}
         <Review />
       </ScrollView>
+
+
+      {loading && (
+          <View pb={3} flexDirection={"row"} justifyContent={"center"}>
+            <View alignItems={"center"} mx={1}>
+              <DotIndicator size={12} count={4} color={colors.main} />
+            </View>
+          </View>
+        )}
 
 
       {showModel && (

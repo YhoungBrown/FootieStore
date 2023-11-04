@@ -10,6 +10,9 @@ import { useState } from "react"
 import { TouchableOpacity } from "react-native"
 import { DotIndicator } from "react-native-indicators"
 import { useEffect } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { clearUser, selectUser } from "../../features/userSlice"
+import { clearShoppingBasket } from "../../features/shoppingBasketSlice"
 
 
 
@@ -19,9 +22,11 @@ const [errorMessage, setErrorMessage] = useState("");
 const [loading, setLoading] = useState(false);
 const [displayName, setDisplayName] = useState(auth.currentUser?.displayName);
 
-
+//const user = useSelector(selectUser);
+//console.log(`i am ${user.displayName}`)
 
 const navigation = useNavigation();
+const dispatch = useDispatch();
 
 
 useEffect(() => {
@@ -44,9 +49,11 @@ useEffect(() => {
 
   const logout = () => {
     setLoading(true);
+    dispatch(clearShoppingBasket())
    signOut(auth)
       .then(() => {
         // Successfully signed out
+        dispatch(clearUser());
         navigation.replace("Login");
       })
       .catch((error) => {

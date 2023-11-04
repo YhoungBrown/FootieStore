@@ -36,12 +36,18 @@ export const shoppingBasketSlice = createSlice({
       } else {
         console.warn(`Can't remove product ${action.payload.id} as it's not in the basket`);
       }
-    },    
+    },
+    setFootwear: (state, action) => {
+      state.footwears = action.payload;
+    },   
+    clearShoppingBasket: (state) => {
+      state.footwears = [];
+    },   
   },
 })
 
 // Action creators are generated for each case reducer function
-export const { addFootwear, removeFootwear } = shoppingBasketSlice.actions
+export const { addFootwear, removeFootwear, setFootwear, clearShoppingBasket} = shoppingBasketSlice.actions
 
 //ShoppingBasket footwear selected N price total;
 export const selectShoppingBasketTotal = (state) => 
